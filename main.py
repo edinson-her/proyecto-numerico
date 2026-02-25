@@ -346,6 +346,15 @@ class AplicacionMatrices:
                 for col_idx, entry in enumerate(fila_entries):
                     valor_texto = entry.get().strip()
                     if valor_texto:
+                        # Validar formato (debe tener parte entera)
+                        if not re.match(r'^-?\d+(\.\d+)?$', valor_texto):
+                            messagebox.showerror("Formato inválido", 
+                                f"❌ El formato '{valor_texto}' en Fila {fila_idx+1}, Columna {col_idx+1} no es válido\n\n"
+                                f"Ejemplos correctos: 3, 0.3, 3.5, -1.2\n"
+                                f"Ejemplos incorrectos: .3, .05, 1., -.5")
+                            entry.delete(0, tk.END)
+                            entry.focus()
+                            return
                         try:
                             fila.append(float(valor_texto))
                         except ValueError:
@@ -385,7 +394,7 @@ class AplicacionMatrices:
                         
                         celda_label = ctk.CTkLabel(
                             celda_frame,
-                            text=f"{valor:,.4g}",
+                            text=f"{valor:.10g}",
                             font=("Arial", 12),
                             text_color="black",
                             fg_color="white"
@@ -907,6 +916,15 @@ class AplicacionMatrices:
                 for col_idx, entry in enumerate(fila_entries):
                     valor_texto = entry.get().strip()
                     if valor_texto:
+                        # Validar formato (debe tener parte entera)
+                        if not re.match(r'^-?\d+(\.\d+)?$', valor_texto):
+                            messagebox.showerror("Formato inválido", 
+                                f"❌ El formato '{valor_texto}' en Matriz 1 - Fila {fila_idx+1}, Columna {col_idx+1} no es válido\n\n"
+                                f"Ejemplos correctos: 3, 0.3, 3.5, -1.2\n"
+                                f"Ejemplos incorrectos: .3, .05, 1., -.5")
+                            entry.delete(0, tk.END)
+                            entry.focus()
+                            return
                         try:
                             fila.append(float(valor_texto))
                         except ValueError:
@@ -930,6 +948,15 @@ class AplicacionMatrices:
                 for col_idx, entry in enumerate(fila_entries):
                     valor_texto = entry.get().strip()
                     if valor_texto:
+                        # Validar formato (debe tener parte entera)
+                        if not re.match(r'^-?\d+(\.\d+)?$', valor_texto):
+                            messagebox.showerror("Formato inválido", 
+                                f"❌ El formato '{valor_texto}' en Matriz 2 - Fila {fila_idx+1}, Columna {col_idx+1} no es válido\n\n"
+                                f"Ejemplos correctos: 3, 0.3, 3.5, -1.2\n"
+                                f"Ejemplos incorrectos: .3, .05, 1., -.5")
+                            entry.delete(0, tk.END)
+                            entry.focus()
+                            return
                         try:
                             fila.append(float(valor_texto))
                         except ValueError:
@@ -972,7 +999,7 @@ class AplicacionMatrices:
                         
                         celda_label = ctk.CTkLabel(
                             celda_frame,
-                            text=f"{valor:,.4g}",
+                            text=f"{valor:.10g}",
                             font=("Arial", 12),
                             text_color="black",
                             fg_color="white"

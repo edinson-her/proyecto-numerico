@@ -99,10 +99,10 @@ class OperacionesMatrices:
         """
         if len(matriz.shape) == 1:
             # Vector fila
-            return "[" + "  ".join(f"{x:,.4g}" for x in matriz) + "]"
+            return "[" + "  ".join(f"{x:.10g}" for x in matriz) + "]"
         else:
             # Matriz 2D
             filas = []
             for fila in matriz:
-                filas.append("[" + "  ".join(f"{x:,.4g}" for x in fila) + "]")
+                filas.append("[" + "  ".join(f"{x:.10g}" for x in fila) + "]")
             return "\n".join(filas)
