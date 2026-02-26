@@ -634,6 +634,23 @@ class AplicacionMatrices:
         )
         btn_selector1.pack(side="left", padx=5)
         
+        def limpiar_matriz1():
+            """Limpia los valores de la Matriz 1"""
+            for fila_entries in matriz1_entries:
+                for entry in fila_entries:
+                    entry.delete(0, tk.END)
+        
+        btn_limpiar1 = ctk.CTkButton(
+            config_m1,
+            text="LIMPIAR MATRIZ",
+            command=limpiar_matriz1,
+            font=("Arial", 10),
+            width=140,
+            fg_color=("#E74C3C", "#C0392B"),
+            hover_color=("#C0392B", "#A93226")
+        )
+        btn_limpiar1.pack(side="left", padx=5)
+        
         # Tabla 1
         tabla1_frame = ctk.CTkFrame(frame_m1)
         tabla1_frame.pack(fill="both", expand=True, pady=5, padx=5)
@@ -809,6 +826,23 @@ class AplicacionMatrices:
             width=120
         )
         btn_selector2.pack(side="left", padx=5)
+        
+        def limpiar_matriz2():
+            """Limpia los valores de la Matriz 2"""
+            for fila_entries in matriz2_entries:
+                for entry in fila_entries:
+                    entry.delete(0, tk.END)
+        
+        btn_limpiar2 = ctk.CTkButton(
+            config_m2,
+            text="LIMPIAR MATRIZ",
+            command=limpiar_matriz2,
+            font=("Arial", 10),
+            width=140,
+            fg_color=("#E74C3C", "#C0392B"),
+            hover_color=("#C0392B", "#A93226")
+        )
+        btn_limpiar2.pack(side="left", padx=5)
         
         # Tabla 2
         tabla2_frame = ctk.CTkFrame(frame_m2)
