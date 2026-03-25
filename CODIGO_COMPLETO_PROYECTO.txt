@@ -1,0 +1,1421 @@
+================================================================================
+            PROYECTO: ANÁLISIS NUMÉRICO - OPERACIONES CON MATRICES
+================================================================================
+════════════════════════════════════════════════════════════════════════════════
+                            ARCHIVO 1: main.py
+════════════════════════════════════════════════════════════════════════════════
+
+import customtkinter as ctk
+from operaciones import OperacionesMatrices
+from instrucciones import Instrucciones
+from ui_base import UIBase
+from ui_escalar_matriz import UIEscalarMatriz
+from ui_matriz_matriz import UIMatrizMatriz
+
+# Configurar tema
+ctk.set_appearance_mode("light")
+ctk.set_default_color_theme("blue")
+
+
+class AplicacionMatrices(UIBase):
+    def __init__(self, root):
+        """Inicializa la aplicación"""
+        super().__init__(root, OperacionesMatrices())
+        
+        self.root.title("Análisis Numérico - Operaciones con Matrices")
+        self.root.geometry("900x600")
+        self.root.resizable(False, False)
+        
+        # Instancias de interfaces
+        self.ui_escalar = UIEscalarMatriz(self.root, self.operaciones)
+        self.ui_matriz = UIMatrizMatriz(self.root, self.operaciones)
+        
+        # Asignar función de regreso
+        self.ui_escalar._regresar_menu = self.crear_interfaz_principal
+        self.ui_matriz._regresar_menu = self.crear_interfaz_principal
+        
+        self.crear_interfaz_principal()
+    
+    def crear_interfaz_principal(self):
+        """Crea el menú principal"""
+        self.limpiar_ventana()
+        self.root.geometry("900x600")
+        
+        # Frame principal
+        main_frame = ctk.CTkFrame(self.root)
+        main_frame.pack(fill="both", expand=True, padx=30, pady=30)
+        
+        # Frame superior con título y botón help
+        titulo_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        titulo_frame.pack(fill="x", pady=(0, 15))
+        
+        # Título principal
+        titulo = ctk.CTkLabel(
+            titulo_frame,
+            text="ANÁLISIS NUMÉRICO",
+            font=("Arial", 32, "bold")
+        )
+        titulo.pack(side="left", expand=True)
+        
+        # Botón de ayuda
+        btn_ayuda_principal = ctk.CTkButton(
+            titulo_frame,
+            text="❓",
+            font=("Arial", 18),
+            width=40,
+            height=40,
+            command=lambda: self.mostrar_instrucciones(
+                "INSTRUCCIONES - MENÚ PRINCIPAL",
+                Instrucciones.get_instrucciones_principal()
+            )
+        )
+        btn_ayuda_principal.pack(side="right", padx=5)
+        
+        # Subtítulo
+        subtitulo = ctk.CTkLabel(
+            main_frame,
+            text="Operaciones con Matrices",
+            font=("Arial", 14)
+        )
+        subtitulo.pack(pady=5)
+        
+        # Descripción
+        desc = ctk.CTkLabel(
+            main_frame,
+            text="Selecciona la operación que deseas realizar",
+            font=("Arial", 11)
+        )
+        desc.pack(pady=20)
+        
+        # Frame para botones
+        botones_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        botones_frame.pack(fill="both", expand=True, pady=20)
+        
+        # Botón 1 - Escalar × Matriz
+        btn1 = ctk.CTkButton(
+            botones_frame,
+            text="⚡ ESCALAR × MATRIZ\n\nMultiplica un escalar por una matriz",
+            font=("Arial", 14, "bold"),
+            height=100,
+            corner_radius=10,
+            command=self.ui_escalar.mostrar
+        )
+        btn1.pack(fill="both", expand=True, pady=10)
+        
+        # Botón 2 - Multiplicación entre Matrices
+        btn2 = ctk.CTkButton(
+            botones_frame,
+            text="🔗 MATRIZ × MATRIZ\n\nMultiplica dos matrices",
+            font=("Arial", 14, "bold"),
+            height=100,
+            corner_radius=10,
+            fg_color=("#8b5cf6", "#6d28d9"),
+            hover_color=("#7c3aed", "#5b21b6"),
+            command=self.ui_matriz.mostrar
+        )
+        btn2.pack(fill="both", expand=True, pady=10)
+
+
+if __name__ == "__main__":
+    root = ctk.CTk()
+    app = AplicacionMatrices(root)
+    root.mainloop()
+
+
+════════════════════════════════════════════════════════════════════════════════
+                        ARCHIVO 2: operaciones.py
+════════════════════════════════════════════════════════════════════════════════
+
+import numpy as np
+
+class OperacionesMatrices:
+    """Clase para realizar operaciones con matrices"""
+    
+    @staticmethod
+    def multiplicar_escalar_matriz(escalar, matriz):
+        """
+        Multiplica un escalar por una matriz
+        
+        Args:
+            escalar: número (int o float)
+            matriz: array de numpy
+            
+        Returns:
+            Matriz resultante
+        """
+        try:
+            resultado = escalar * matriz
+            return resultado
+        except Exception as e:
+            raise ValueError(f"Error en operación: {str(e)}")
+    
+    @staticmethod
+    def multiplicar_matrices(matriz1, matriz2):
+        """
+        Multiplica dos matrices
+        
+        Args:
+            matriz1: primera matriz (array de numpy)
+            matriz2: segunda matriz (array de numpy)
+            
+        Returns:
+            Matriz resultante
+        """
+        try:
+            if matriz1.shape[1] != matriz2.shape[0]:
+                raise ValueError(
+                    f"Dimensiones incompatibles: "
+                    f"Matriz 1 ({matriz1.shape[0]}x{matriz1.shape[1]}) y "
+                    f"Matriz 2 ({matriz2.shape[0]}x{matriz2.shape[1]})"
+                )
+            resultado = np.matmul(matriz1, matriz2)
+            return resultado
+        except Exception as e:
+            raise ValueError(f"Error en operación: {str(e)}")
+    
+    @staticmethod
+    def parse_matriz_desde_texto(texto):
+        """
+        Convierte texto en formato matriz a array de numpy
+        Formato esperado: filas separadas por ; y elementos por comas
+        Ejemplo: "1,2,3;4,5,6" -> [[1,2,3],[4,5,6]]
+        
+        Args:
+            texto: string con la matriz
+            
+        Returns:
+            Array de numpy
+        """
+        try:
+            filas = texto.strip().split(';')
+            matriz_list = []
+            
+            for fila in filas:
+                elementos = [float(x.strip()) for x in fila.split(',') if x.strip()]
+                if not elementos:
+                    raise ValueError("Fila vacía detectada")
+                matriz_list.append(elementos)
+            
+            if not matriz_list:
+                raise ValueError("Matriz vacía")
+            
+            # Verificar que todas las filas tengan el mismo número de elementos
+            num_columnas = len(matriz_list[0])
+            for i, fila in enumerate(matriz_list):
+                if len(fila) != num_columnas:
+                    raise ValueError(
+                        f"Fila {i+1} tiene {len(fila)} elementos, "
+                        f"pero se esperaban {num_columnas}"
+                    )
+            
+            return np.array(matriz_list)
+        except ValueError as e:
+            raise ValueError(f"Error al parsear matriz: {str(e)}")
+        except Exception as e:
+            raise ValueError(f"Error inesperado: {str(e)}")
+    
+    @staticmethod
+    def formato_matriz(matriz):
+        """
+        Convierte una matriz numpy a formato string legible
+        
+        Args:
+            matriz: array de numpy
+            
+        Returns:
+            String formateado
+        """
+        if len(matriz.shape) == 1:
+            # Vector fila
+            return "[" + "  ".join(f"{x:.10g}" for x in matriz) + "]"
+        else:
+            # Matriz 2D
+            filas = []
+            for fila in matriz:
+                filas.append("[" + "  ".join(f"{x:.10g}" for x in fila) + "]")
+            return "\n".join(filas)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                         ARCHIVO 3: ui_base.py
+════════════════════════════════════════════════════════════════════════════════
+
+"""
+Módulo base de interfaz
+Contiene la clase base con métodos comunes para todas las interfaces
+"""
+
+import customtkinter as ctk
+from instrucciones import Instrucciones
+
+
+class UIBase:
+    """Clase base con métodos comunes para todas las interfaces"""
+    
+    def __init__(self, root, operaciones):
+        """
+        Inicializa la interfaz base
+        
+        Args:
+            root: ventana principal de tkinter
+            operaciones: instancia de OperacionesMatrices
+        """
+        self.root = root
+        self.operaciones = operaciones
+    
+    def mostrar_instrucciones(self, titulo, contenido):
+        """
+        Muestra instrucciones en una ventana emergente
+        
+        Args:
+            titulo: título de la ventana
+            contenido: contenido de las instrucciones
+        """
+        ventana_ayuda = ctk.CTkToplevel(self.root)
+        ventana_ayuda.title(titulo)
+        ventana_ayuda.geometry("700x600")
+        ventana_ayuda.resizable(True, True)
+        ventana_ayuda.attributes("-topmost", True)
+        
+        # Frame principal
+        main_frame = ctk.CTkFrame(ventana_ayuda)
+        main_frame.pack(fill="both", expand=True, padx=0, pady=0)
+        
+        # Frame de título
+        titulo_frame = ctk.CTkFrame(main_frame, fg_color="#2563eb")
+        titulo_frame.pack(fill="x", padx=0, pady=0)
+        
+        titulo_label = ctk.CTkLabel(
+            titulo_frame,
+            text=titulo,
+            font=("Arial", 16, "bold"),
+            text_color="white"
+        )
+        titulo_label.pack(pady=15, padx=20)
+        
+        # Frame para el scroll
+        scroll_frame = ctk.CTkFrame(main_frame)
+        scroll_frame.pack(fill="both", expand=True, padx=15, pady=15)
+        
+        # Canvas con scrollbar
+        canvas = ctk.CTkCanvas(scroll_frame, bg="white", highlightthickness=0)
+        scrollbar = ctk.CTkScrollbar(scroll_frame, command=canvas.yview)
+        scrollable_frame = ctk.CTkFrame(canvas, fg_color="white")
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Texto de instrucciones
+        texto_label = ctk.CTkLabel(
+            scrollable_frame,
+            text=contenido,
+            font=("Courier", 10),
+            justify="left",
+            text_color="black"
+        )
+        texto_label.pack(fill="both", expand=True, padx=15, pady=15)
+        
+        # Botón cerrar
+        cerrar_frame = ctk.CTkFrame(main_frame)
+        cerrar_frame.pack(fill="x", padx=15, pady=10)
+        
+        btn_cerrar = ctk.CTkButton(
+            cerrar_frame,
+            text="CERRAR",
+            command=ventana_ayuda.destroy,
+            font=("Arial", 11, "bold"),
+            height=30,
+            width=150
+        )
+        btn_cerrar.pack(side="right", padx=5)
+    
+    def limpiar_ventana(self):
+        """Limpia todos los widgets de la ventana principal"""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+    
+    def crear_tabla_matriz(self, scrollable_frame, filas, cols):
+        """
+        Crea una tabla de entrada para una matriz
+        
+        Args:
+            scrollable_frame: frame donde colocar la tabla
+            filas: número de filas
+            cols: número de columnas
+            
+        Returns:
+            lista de listas con los Entry objects
+        """
+        # Limpiar frame anterior
+        for widget in scrollable_frame.winfo_children():
+            widget.destroy()
+        
+        matriz_entries = []
+        
+        # Frame con padding para centrar la matriz
+        matriz_frame = ctk.CTkFrame(scrollable_frame, fg_color="white")
+        matriz_frame.pack(pady=10, padx=10)
+        
+        # Crear entrada para cada celda
+        for i in range(filas):
+            fila_entries = []
+            for j in range(cols):
+                entry = ctk.CTkEntry(matriz_frame, width=50, font=("Arial", 9))
+                entry.grid(row=i, column=j, padx=3, pady=3)
+                fila_entries.append(entry)
+            matriz_entries.append(fila_entries)
+        
+        return matriz_entries
+    
+    def vaciar_entrada(self, entrada):
+        """Limpia el contenido de una entrada"""
+        entrada.delete(0, len(entrada.get()))
+    
+    def limpiar_matriz_entries(self, matriz_entries):
+        """Limpia todas las celdas de una matriz"""
+        for fila_entries in matriz_entries:
+            for entry in fila_entries:
+                self.vaciar_entrada(entry)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                      ARCHIVO 4: validadores.py
+════════════════════════════════════════════════════════════════════════════════
+
+"""
+Módulo de validadores
+Contiene todas las funciones de validación de datos
+"""
+
+import re
+from tkinter import messagebox
+
+
+class Validador:
+    """Clase con métodos estáticos para validar datos"""
+    
+    @staticmethod
+    def es_numero_valido(valor_texto):
+        """
+        Valida que un texto sea un número válido (entero o decimal)
+        
+        Args:
+            valor_texto: string con el número a validar
+            
+        Returns:
+            tupla (es_valido, valor_float, mensaje_error)
+        """
+        valor_texto = valor_texto.strip()
+        
+        if not valor_texto:
+            return False, None, "El campo está vacío"
+        
+        # Validar formato: debe tener parte entera
+        if not re.match(r'^-?\d+(\.\d+)?$', valor_texto):
+            return False, None, (
+                f"❌ El formato '{valor_texto}' no es válido\n\n"
+                f"Ejemplos correctos: 3, 0.3, 3.5, -1.2\n"
+                f"Ejemplos incorrectos: .3, .05, 1., -.5"
+            )
+        
+        try:
+            valor = float(valor_texto)
+            return True, valor, None
+        except ValueError:
+            return False, None, f"❌ El valor '{valor_texto}' no es un número válido"
+    
+    @staticmethod
+    def validar_escalar(valor_texto):
+        """
+        Valida un valor escalar
+        
+        Args:
+            valor_texto: string con el escalar
+            
+        Returns:
+            tupla (es_valido, valor_float, mensaje_error)
+        """
+        valor_texto = valor_texto.strip()
+        
+        if not valor_texto:
+            return False, None, "❌ Debes ingresar un ESCALAR\n\nEscribe un número en el campo 'ESCALAR'"
+        
+        return Validador.es_numero_valido(valor_texto)
+    
+    @staticmethod
+    def validar_matriz_llena(matriz_entries):
+        """
+        Valida que todas las celdas de una matriz estén llenas
+        
+        Args:
+            matriz_entries: lista de listas con tkinter Entry objects
+            
+        Returns:
+            tupla (es_valida, posicion_vacia)
+        """
+        for fila_idx, fila_entries in enumerate(matriz_entries):
+            for col_idx, entry in enumerate(fila_entries):
+                valor_texto = entry.get().strip()
+                
+                if not valor_texto:
+                    return False, (fila_idx + 1, col_idx + 1)
+                
+                # Validar que sea número
+                es_valido, _, _ = Validador.es_numero_valido(valor_texto)
+                if not es_valido:
+                    return False, (fila_idx + 1, col_idx + 1)
+        
+        return True, None
+    
+    @staticmethod
+    def obtener_valores_matriz(matriz_entries):
+        """
+        Extrae los valores de una matriz y los convierte a float
+        
+        Args:
+            matriz_entries: lista de listas con tkinter Entry objects
+            
+        Returns:
+            tupla (exito, valores, mensaje_error, posicion_error)
+        """
+        valores = []
+        
+        for fila_idx, fila_entries in enumerate(matriz_entries):
+            fila = []
+            for col_idx, entry in enumerate(fila_entries):
+                valor_texto = entry.get().strip()
+                
+                if not valor_texto:
+                    return (False, None, 
+                        f"Celda vacía en Fila {fila_idx+1}, Columna {col_idx+1}",
+                        (fila_idx, col_idx))
+                
+                # Validar formato
+                if not re.match(r'^-?\d+(\.\d+)?$', valor_texto):
+                    return (False, None,
+                        f"❌ Formato inválido '{valor_texto}' en Fila {fila_idx+1}, Columna {col_idx+1}\n\n"
+                        f"Ejemplos correctos: 3, 0.3, 3.5, -1.2\n"
+                        f"Ejemplos incorrectos: .3, .05, 1., -.5",
+                        (fila_idx, col_idx))
+                
+                try:
+                    fila.append(float(valor_texto))
+                except ValueError:
+                    return (False, None,
+                        f"Valor inválido '{valor_texto}' en Fila {fila_idx+1}, Columna {col_idx+1}",
+                        (fila_idx, col_idx))
+            
+            valores.append(fila)
+        
+        return (True, valores, None, None)
+    
+    @staticmethod
+    def validar_dimensiones_compatibles(cols_m1, filas_m2):
+        """
+        Valida que dos matrices sean compatibles para multiplicación
+        
+        Args:
+            cols_m1: número de columnas de matriz 1
+            filas_m2: número de filas de matriz 2
+            
+        Returns:
+            tupla (es_compatible, mensaje_error)
+        """
+        if cols_m1 != filas_m2:
+            return (False, 
+                f"❌ Dimensiones incompatibles\n\n"
+                f"Columnas de Matriz 1: {cols_m1}\n"
+                f"Filas de Matriz 2: {filas_m2}\n\n"
+                f"Las COLUMNAS de la primera deben ser iguales\n"
+                f"a las FILAS de la segunda.")
+        
+        return (True, None)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                       ARCHIVO 5: selectores.py
+════════════════════════════════════════════════════════════════════════════════
+
+"""
+Módulo de selectores de dimensiones
+Reutilizable para seleccionar dimensiones de matrices
+"""
+
+import customtkinter as ctk
+import tkinter as tk
+
+
+class SelectorDimensiones:
+    """Clase para mostrar un selector de dimensiones reutilizable"""
+    
+    @staticmethod
+    def mostrar_selector(parent_window, titulo, callback):
+        """
+        Muestra una ventana para seleccionar dimensiones de matriz
+        
+        Args:
+            parent_window: ventana padre (root)
+            titulo: título de la ventana emergente
+            callback: función a ejecutar con (filas, cols) seleccionadas
+        """
+        ventana = ctk.CTkToplevel(parent_window)
+        ventana.title(titulo)
+        ventana.geometry("500x600")
+        ventana.resizable(False, False)
+        ventana.attributes("-topmost", True)
+        ventana.grab_set()
+        
+        # Título
+        titulo_ventana = ctk.CTkLabel(
+            ventana,
+            text="SELECCIONA LAS DIMENSIONES",
+            font=("Arial", 14, "bold")
+        )
+        titulo_ventana.pack(pady=10)
+        
+        # Subtítulo recomendadas
+        recomendadas_label = ctk.CTkLabel(
+            ventana,
+            text="RECOMENDADAS:",
+            font=("Arial", 12, "bold"),
+            text_color="green"
+        )
+        recomendadas_label.pack(pady=5)
+        
+        # Frame para opciones recomendadas
+        recomendadas_frame = ctk.CTkFrame(ventana)
+        recomendadas_frame.pack(fill="x", padx=20, pady=5)
+        
+        def seleccionar(filas, cols):
+            """Ejecuta el callback y cierra la ventana"""
+            callback(filas, cols)
+            ventana.destroy()
+        
+        # Botón 2×2
+        btn_2x2 = ctk.CTkButton(
+            recomendadas_frame,
+            text="2×2",
+            command=lambda: seleccionar(2, 2),
+            width=70,
+            height=40,
+            font=("Arial", 11, "bold"),
+            fg_color="green"
+        )
+        btn_2x2.pack(side="left", padx=5, pady=5)
+        
+        # Botón 3×3
+        btn_3x3 = ctk.CTkButton(
+            recomendadas_frame,
+            text="3×3",
+            command=lambda: seleccionar(3, 3),
+            width=70,
+            height=40,
+            font=("Arial", 11, "bold"),
+            fg_color="green"
+        )
+        btn_3x3.pack(side="left", padx=5, pady=5)
+        
+        # Subtítulo otras opciones
+        otras_label = ctk.CTkLabel(
+            ventana,
+            text="OTRAS OPCIONES:",
+            font=("Arial", 12, "bold")
+        )
+        otras_label.pack(pady=10)
+        
+        # Frame con scroll para otras opciones
+        scroll_frame = ctk.CTkFrame(ventana)
+        scroll_frame.pack(fill="both", expand=True, padx=10, pady=5)
+        
+        canvas = ctk.CTkCanvas(scroll_frame, bg="white", highlightthickness=0)
+        scrollbar = ctk.CTkScrollbar(scroll_frame, command=canvas.yview)
+        otras_frame = ctk.CTkFrame(canvas, fg_color="white")
+        
+        otras_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=otras_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Listado de otras dimensiones
+        dimensiones = [
+            (1, 1), (1, 2), (1, 3), (1, 4), (1, 5),
+            (2, 1), (2, 3), (2, 4), (2, 5),
+            (3, 1), (3, 2), (3, 4), (3, 5),
+            (4, 1), (4, 2), (4, 3), (4, 4), (4, 5),
+            (5, 1), (5, 2), (5, 3), (5, 4), (5, 5)
+        ]
+        
+        for i, (filas, cols) in enumerate(dimensiones):
+            fila = i // 5
+            col = i % 5
+            
+            btn = ctk.CTkButton(
+                otras_frame,
+                text=f"{filas}×{cols}",
+                command=lambda f=filas, c=cols: seleccionar(f, c),
+                width=60,
+                height=35,
+                font=("Arial", 10)
+            )
+            btn.grid(row=fila, column=col, padx=3, pady=3)
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    ARCHIVO 6: ui_escalar_matriz.py
+════════════════════════════════════════════════════════════════════════════════
+
+"""
+Módulo de interfaz para Escalar × Matriz
+"""
+
+import customtkinter as ctk
+from tkinter import messagebox
+import tkinter as tk
+import numpy as np
+
+from ui_base import UIBase
+from validadores import Validador
+from selectores import SelectorDimensiones
+from instrucciones import Instrucciones
+
+
+class UIEscalarMatriz(UIBase):
+    """Interfaz para la operación Escalar × Matriz"""
+    
+    def mostrar(self):
+        """Muestra la interfaz de Escalar × Matriz"""
+        self.limpiar_ventana()
+        self.root.geometry("900x800")
+        
+        # Frame principal
+        main_frame = ctk.CTkFrame(self.root)
+        main_frame.pack(fill="both", expand=True, padx=15, pady=15)
+        
+        # Frame de título con ayuda
+        titulo_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        titulo_frame.pack(fill="x", pady=(0, 10))
+        
+        # Título
+        titulo = ctk.CTkLabel(
+            titulo_frame,
+            text="ESCALAR × MATRIZ",
+            font=("Arial", 24, "bold")
+        )
+        titulo.pack(side="left", expand=True)
+        
+        # Botón de ayuda
+        btn_ayuda = ctk.CTkButton(
+            titulo_frame,
+            text="❓",
+            font=("Arial", 16),
+            width=35,
+            height=35,
+            command=lambda: self.mostrar_instrucciones(
+                "INSTRUCCIONES - ESCALAR × MATRIZ",
+                Instrucciones.get_instrucciones_escalar_matriz()
+            )
+        )
+        btn_ayuda.pack(side="right", padx=5)
+        
+        # Frame de configuración
+        config_frame = ctk.CTkFrame(main_frame)
+        config_frame.pack(fill="x", pady=10)
+        
+        # Etiqueta y entrada del escalar
+        ctk.CTkLabel(config_frame, text="ESCALAR:", font=("Arial", 11)).pack(side="left", padx=5)
+        escalar_entry = ctk.CTkEntry(config_frame, width=100, font=("Arial", 11))
+        escalar_entry.pack(side="left", padx=5)
+        
+        # Etiqueta de dimensión
+        dimension_label = ctk.CTkLabel(
+            config_frame,
+            text="MATRIZ: (sin seleccionar)",
+            font=("Arial", 11)
+        )
+        dimension_label.pack(side="left", padx=20)
+        
+        # Campos ocultos para almacenar filas y columnas
+        filas_entry = ctk.CTkEntry(config_frame, width=1, font=("Arial", 11))
+        filas_entry.pack(side="left", padx=0)
+        filas_entry.pack_forget()
+        
+        cols_entry = ctk.CTkEntry(config_frame, width=1, font=("Arial", 11))
+        cols_entry.pack(side="left", padx=0)
+        cols_entry.pack_forget()
+        
+        # Variables para las matrices
+        matriz_entries = []
+        
+        # Función para manejar selección de dimensiones
+        def on_seleccionar_dimensiones(filas, cols):
+            filas_entry.delete(0, tk.END)
+            filas_entry.insert(0, str(filas))
+            cols_entry.delete(0, tk.END)
+            cols_entry.insert(0, str(cols))
+            dimension_label.configure(text=f"MATRIZ: {filas}×{cols}")
+            
+            # Crear tabla
+            nonlocal matriz_entries
+            matriz_entries = self.crear_tabla_matriz(scrollable_frame, filas, cols)
+        
+        # Botón selector
+        btn_selector = ctk.CTkButton(
+            config_frame,
+            text="SELECCIONAR DIMENSIONES",
+            command=lambda: SelectorDimensiones.mostrar_selector(
+                self.root,
+                "SELECCIONAR DIMENSIONES",
+                on_seleccionar_dimensiones
+            ),
+            font=("Arial", 11),
+            width=180
+        )
+        btn_selector.pack(side="left", padx=10)
+        
+        # Botón vaciar
+        def vaciar_tabla():
+            if not matriz_entries:
+                messagebox.showwarning("Advertencia", "No hay tabla creada aún")
+                return
+            self.limpiar_matriz_entries(matriz_entries)
+        
+        btn_vaciar = ctk.CTkButton(
+            config_frame,
+            text="VACIAR TABLA",
+            command=vaciar_tabla,
+            font=("Arial", 10),
+            width=120
+        )
+        btn_vaciar.pack(side="left", padx=5)
+        
+        # Frame principal para tabla y resultado lado a lado
+        tabla_frame = ctk.CTkFrame(main_frame)
+        tabla_frame.pack(fill="both", expand=True, pady=15, padx=10)
+        
+        # Frame para la tabla (izquierda)
+        tabla_container = ctk.CTkFrame(tabla_frame)
+        tabla_container.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+        
+        tabla_titulo = ctk.CTkLabel(tabla_container, text="MATRIZ", font=("Arial", 13, "bold"))
+        tabla_titulo.pack(pady=8)
+        
+        # Canvas con scroll para la tabla
+        tabla_scroll_frame = ctk.CTkFrame(tabla_container)
+        tabla_scroll_frame.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        canvas = ctk.CTkCanvas(tabla_scroll_frame, bg="white", highlightthickness=0, height=350)
+        scrollbar = ctk.CTkScrollbar(tabla_scroll_frame, command=canvas.yview)
+        scrollable_frame = ctk.CTkFrame(canvas, fg_color="white")
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Frame para el resultado (derecha)
+        resultado_container = ctk.CTkFrame(tabla_frame)
+        resultado_container.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+        
+        resultado_title = ctk.CTkLabel(resultado_container, text="RESULTADO", font=("Arial", 13, "bold"))
+        resultado_title.pack(pady=8)
+        
+        # Frame para el contenido del resultado
+        resultado_scroll_frame = ctk.CTkFrame(resultado_container)
+        resultado_scroll_frame.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Función para calcular
+        def calcular():
+            # Validar que la tabla exista
+            if not matriz_entries:
+                messagebox.showwarning("Advertencia", "Por favor, crea una tabla primero")
+                return
+            
+            # Validar escalar
+            es_valido, escalar, error = Validador.validar_escalar(escalar_entry.get())
+            if not es_valido:
+                messagebox.showerror("Error de entrada", error)
+                escalar_entry.focus()
+                return
+            
+            # Validar que la matriz no esté vacía
+            es_valida, posicion = Validador.validar_matriz_llena(matriz_entries)
+            if not es_valida:
+                messagebox.showerror(
+                    "Matriz vacía o inválida",
+                    f"Error en Fila {posicion[0]}, Columna {posicion[1]}\n\n"
+                    f"Por favor, rellena todas las celdas con valores válidos"
+                )
+                matriz_entries[posicion[0]-1][posicion[1]-1].focus()
+                return
+            
+            # Obtener valores
+            exito, valores, error, pos = Validador.obtener_valores_matriz(matriz_entries)
+            if not exito:
+                messagebox.showerror("Error", error)
+                if pos:
+                    matriz_entries[pos[0]][pos[1]].focus()
+                return
+            
+            # Calcular
+            try:
+                matriz = np.array(valores)
+                resultado = self.operaciones.multiplicar_escalar_matriz(escalar, matriz)
+                
+                # Limpiar frame de resultado
+                for widget in resultado_scroll_frame.winfo_children():
+                    widget.destroy()
+                
+                # Mostrar resultado
+                tabla_resultado = ctk.CTkFrame(resultado_scroll_frame, fg_color="white")
+                tabla_resultado.pack(expand=True, padx=10, pady=10)
+                
+                for i, fila in enumerate(resultado):
+                    for j, valor in enumerate(fila):
+                        celda_frame = ctk.CTkFrame(
+                            tabla_resultado,
+                            fg_color="white",
+                            border_width=1,
+                            border_color="#cccccc"
+                        )
+                        celda_frame.grid(row=i, column=j, padx=2, pady=2)
+                        
+                        celda_label = ctk.CTkLabel(
+                            celda_frame,
+                            text=f"{valor:.10g}",
+                            font=("Arial", 12),
+                            text_color="black",
+                            fg_color="white"
+                        )
+                        celda_label.pack(padx=12, pady=8)
+                
+            except Exception as e:
+                messagebox.showerror("Error en cálculo", f"❌ Error:\n\n{str(e)}")
+        
+        # Frame de botones
+        botones_frame = ctk.CTkFrame(main_frame)
+        botones_frame.pack(fill="both", pady=10, padx=10)
+        
+        btn_regresar = ctk.CTkButton(
+            botones_frame,
+            text="ATRÁS",
+            command=self._regresar_menu,
+            font=("Arial", 10),
+            height=30,
+            width=80
+        )
+        btn_regresar.pack(side="left", padx=5)
+        
+        btn_calcular = ctk.CTkButton(
+            botones_frame,
+            text="CALCULAR",
+            command=calcular,
+            font=("Arial", 12, "bold"),
+            height=45,
+            width=150
+        )
+        btn_calcular.pack(side="right", padx=5, fill="y")
+    
+    def _regresar_menu(self):
+        """Método que será sobrescrito en main.py"""
+        pass
+
+
+════════════════════════════════════════════════════════════════════════════════
+                    ARCHIVO 7: ui_matriz_matriz.py
+════════════════════════════════════════════════════════════════════════════════
+
+"""
+Módulo de interfaz para Matriz × Matriz
+"""
+
+import customtkinter as ctk
+from tkinter import messagebox
+import numpy as np
+
+from ui_base import UIBase
+from validadores import Validador
+from selectores import SelectorDimensiones
+from instrucciones import Instrucciones
+
+
+class UIMatrizMatriz(UIBase):
+    """Interfaz para la operación Matriz × Matriz"""
+    
+    def mostrar(self):
+        """Muestra la interfaz de Matriz × Matriz"""
+        self.limpiar_ventana()
+        self.root.geometry("1000x800")
+        
+        # Frame principal
+        main_frame = ctk.CTkFrame(self.root)
+        main_frame.pack(fill="both", expand=True, padx=15, pady=15)
+        
+        # Frame de título con ayuda
+        titulo_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        titulo_frame.pack(fill="x", pady=(0, 10))
+        
+        # Título
+        titulo = ctk.CTkLabel(
+            titulo_frame,
+            text="MATRIZ × MATRIZ",
+            font=("Arial", 24, "bold")
+        )
+        titulo.pack(side="left", expand=True)
+        
+        # Botón de ayuda
+        btn_ayuda_mm = ctk.CTkButton(
+            titulo_frame,
+            text="❓",
+            font=("Arial", 16),
+            width=35,
+            height=35,
+            command=lambda: self.mostrar_instrucciones(
+                "INSTRUCCIONES - MATRIZ × MATRIZ",
+                Instrucciones.get_instrucciones_matriz_matriz()
+            )
+        )
+        btn_ayuda_mm.pack(side="right", padx=5)
+        
+        # Frame principal de dos columnas
+        contenedor_principal = ctk.CTkFrame(main_frame)
+        contenedor_principal.pack(fill="both", expand=False, pady=15, padx=10, side="top")
+        
+        # LADO IZQUIERDO: MATRICES
+        contenedor_matrices = ctk.CTkFrame(contenedor_principal)
+        contenedor_matrices.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+        
+        # ===== MATRIZ 1 =====
+        frame_m1 = ctk.CTkFrame(contenedor_matrices)
+        frame_m1.pack(fill="both", expand=True, pady=5)
+        
+        titulo_m1 = ctk.CTkLabel(frame_m1, text="MATRIZ 1", font=("Arial", 13, "bold"))
+        titulo_m1.pack(pady=8)
+        
+        config_m1 = ctk.CTkFrame(frame_m1)
+        config_m1.pack(fill="x", pady=5, padx=5)
+        
+        dimension1_label = ctk.CTkLabel(config_m1, text="DIMENSIÓN: (sin seleccionar)", font=("Arial", 10))
+        dimension1_label.pack(side="left", padx=5)
+        
+        matriz1_entries = []
+        
+        def on_seleccionar_m1(filas, cols):
+            dimension1_label.configure(text=f"DIMENSIÓN: {filas}×{cols}")
+            nonlocal matriz1_entries
+            matriz1_entries = self.crear_tabla_matriz(scrollable1, filas, cols)
+        
+        btn_selector1 = ctk.CTkButton(
+            config_m1,
+            text="SELECCIONAR",
+            command=lambda: SelectorDimensiones.mostrar_selector(
+                self.root,
+                "SELECCIONAR DIMENSIONES - MATRIZ 1",
+                on_seleccionar_m1
+            ),
+            font=("Arial", 10),
+            width=120
+        )
+        btn_selector1.pack(side="left", padx=5)
+        
+        btn_limpiar1 = ctk.CTkButton(
+            config_m1,
+            text="LIMPIAR MATRIZ",
+            command=lambda: self.limpiar_matriz_entries(matriz1_entries),
+            font=("Arial", 10),
+            width=140,
+            fg_color=("#E74C3C", "#C0392B"),
+            hover_color=("#C0392B", "#A93226")
+        )
+        btn_limpiar1.pack(side="left", padx=5)
+        
+        # Tabla 1
+        tabla1_frame = ctk.CTkFrame(frame_m1)
+        tabla1_frame.pack(fill="both", expand=True, pady=5, padx=5)
+        
+        canvas1 = ctk.CTkCanvas(tabla1_frame, bg="white", highlightthickness=0, height=180)
+        scrollbar1 = ctk.CTkScrollbar(tabla1_frame, command=canvas1.yview)
+        scrollable1 = ctk.CTkFrame(canvas1, fg_color="white")
+        
+        scrollable1.bind(
+            "<Configure>",
+            lambda e: canvas1.configure(scrollregion=canvas1.bbox("all"))
+        )
+        
+        canvas1.create_window((0, 0), window=scrollable1, anchor="nw")
+        canvas1.configure(yscrollcommand=scrollbar1.set)
+        
+        canvas1.pack(side="left", fill="both", expand=True)
+        scrollbar1.pack(side="right", fill="y")
+        
+        # ===== MATRIZ 2 =====
+        frame_m2 = ctk.CTkFrame(contenedor_matrices)
+        frame_m2.pack(fill="both", expand=True, pady=5)
+        
+        titulo_m2 = ctk.CTkLabel(frame_m2, text="MATRIZ 2", font=("Arial", 13, "bold"))
+        titulo_m2.pack(pady=8)
+        
+        config_m2 = ctk.CTkFrame(frame_m2)
+        config_m2.pack(fill="x", pady=5, padx=5)
+        
+        dimension2_label = ctk.CTkLabel(config_m2, text="DIMENSIÓN: (sin seleccionar)", font=("Arial", 10))
+        dimension2_label.pack(side="left", padx=5)
+        
+        matriz2_entries = []
+        
+        def on_seleccionar_m2(filas, cols):
+            dimension2_label.configure(text=f"DIMENSIÓN: {filas}×{cols}")
+            nonlocal matriz2_entries
+            matriz2_entries = self.crear_tabla_matriz(scrollable2, filas, cols)
+        
+        btn_selector2 = ctk.CTkButton(
+            config_m2,
+            text="SELECCIONAR",
+            command=lambda: SelectorDimensiones.mostrar_selector(
+                self.root,
+                "SELECCIONAR DIMENSIONES - MATRIZ 2",
+                on_seleccionar_m2
+            ),
+            font=("Arial", 10),
+            width=120
+        )
+        btn_selector2.pack(side="left", padx=5)
+        
+        btn_limpiar2 = ctk.CTkButton(
+            config_m2,
+            text="LIMPIAR MATRIZ",
+            command=lambda: self.limpiar_matriz_entries(matriz2_entries),
+            font=("Arial", 10),
+            width=140,
+            fg_color=("#E74C3C", "#C0392B"),
+            hover_color=("#C0392B", "#A93226")
+        )
+        btn_limpiar2.pack(side="left", padx=5)
+        
+        # Tabla 2
+        tabla2_frame = ctk.CTkFrame(frame_m2)
+        tabla2_frame.pack(fill="both", expand=True, pady=5, padx=5)
+        
+        canvas2 = ctk.CTkCanvas(tabla2_frame, bg="white", highlightthickness=0, height=180)
+        scrollbar2 = ctk.CTkScrollbar(tabla2_frame, command=canvas2.yview)
+        scrollable2 = ctk.CTkFrame(canvas2, fg_color="white")
+        
+        scrollable2.bind(
+            "<Configure>",
+            lambda e: canvas2.configure(scrollregion=canvas2.bbox("all"))
+        )
+        
+        canvas2.create_window((0, 0), window=scrollable2, anchor="nw")
+        canvas2.configure(yscrollcommand=scrollbar2.set)
+        
+        canvas2.pack(side="left", fill="both", expand=True)
+        scrollbar2.pack(side="right", fill="y")
+        
+        # ===== LADO DERECHO: RESULTADO =====
+        resultado_container = ctk.CTkFrame(contenedor_principal)
+        resultado_container.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+        
+        resultado_title = ctk.CTkLabel(resultado_container, text="RESULTADO", font=("Arial", 13, "bold"))
+        resultado_title.pack(pady=8)
+        
+        resultado_scroll_frame = ctk.CTkFrame(resultado_container)
+        resultado_scroll_frame.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        # Función para calcular
+        def calcular():
+            # Validar que existan tablas
+            if not matriz1_entries or not matriz2_entries:
+                messagebox.showerror("Advertencia", "Por favor, selecciona las dimensiones de ambas matrices")
+                return
+            
+            filas1 = len(matriz1_entries)
+            cols1 = len(matriz1_entries[0])
+            filas2 = len(matriz2_entries)
+            cols2 = len(matriz2_entries[0])
+            
+            # Validar compatibilidad
+            es_compatible, error = Validador.validar_dimensiones_compatibles(cols1, filas2)
+            if not es_compatible:
+                messagebox.showerror("Dimensiones incompatibles", error)
+                return
+            
+            # Validar M1 llena
+            es_valida, posicion = Validador.validar_matriz_llena(matriz1_entries)
+            if not es_valida:
+                messagebox.showerror(
+                    "Matriz 1 vacía o inválida",
+                    f"Error en Fila {posicion[0]}, Columna {posicion[1]}"
+                )
+                matriz1_entries[posicion[0]-1][posicion[1]-1].focus()
+                return
+            
+            # Validar M2 llena
+            es_valida, posicion = Validador.validar_matriz_llena(matriz2_entries)
+            if not es_valida:
+                messagebox.showerror(
+                    "Matriz 2 vacía o inválida",
+                    f"Error en Fila {posicion[0]}, Columna {posicion[1]}"
+                )
+                matriz2_entries[posicion[0]-1][posicion[1]-1].focus()
+                return
+            
+            # Obtener valores M1
+            exito, valores1, error, pos = Validador.obtener_valores_matriz(matriz1_entries)
+            if not exito:
+                messagebox.showerror("Error en Matriz 1", error)
+                if pos:
+                    matriz1_entries[pos[0]][pos[1]].focus()
+                return
+            
+            # Obtener valores M2
+            exito, valores2, error, pos = Validador.obtener_valores_matriz(matriz2_entries)
+            if not exito:
+                messagebox.showerror("Error en Matriz 2", error)
+                if pos:
+                    matriz2_entries[pos[0]][pos[1]].focus()
+                return
+            
+            # Calcular
+            try:
+                matriz1 = np.array(valores1)
+                matriz2 = np.array(valores2)
+                resultado = self.operaciones.multiplicar_matrices(matriz1, matriz2)
+                
+                # Limpiar y mostrar resultado
+                for widget in resultado_scroll_frame.winfo_children():
+                    widget.destroy()
+                
+                tabla_resultado = ctk.CTkFrame(resultado_scroll_frame, fg_color="white")
+                tabla_resultado.pack(expand=True, padx=10, pady=10)
+                
+                for i, fila in enumerate(resultado):
+                    for j, valor in enumerate(fila):
+                        celda_frame = ctk.CTkFrame(
+                            tabla_resultado,
+                            fg_color="white",
+                            border_width=1,
+                            border_color="#cccccc"
+                        )
+                        celda_frame.grid(row=i, column=j, padx=2, pady=2)
+                        
+                        celda_label = ctk.CTkLabel(
+                            celda_frame,
+                            text=f"{valor:.10g}",
+                            font=("Arial", 12),
+                            text_color="black",
+                            fg_color="white"
+                        )
+                        celda_label.pack(padx=12, pady=8)
+                
+            except Exception as e:
+                messagebox.showerror("Error en cálculo", f"Error:\n\n{str(e)}")
+        
+        # Frame de botones
+        botones_frame = ctk.CTkFrame(main_frame)
+        botones_frame.pack(fill="x", pady=10, padx=10)
+        
+        btn_regresar = ctk.CTkButton(
+            botones_frame,
+            text="ATRÁS",
+            command=self._regresar_menu,
+            font=("Arial", 10),
+            height=30,
+            width=80
+        )
+        btn_regresar.pack(side="left", padx=5)
+        
+        btn_calcular = ctk.CTkButton(
+            botones_frame,
+            text="CALCULAR",
+            command=calcular,
+            font=("Arial", 12, "bold"),
+            height=45,
+            width=150
+        )
+        btn_calcular.pack(side="right", padx=5, fill="y")
+    
+    def _regresar_menu(self):
+        """Método que será sobrescrito en main.py"""
+        pass
+
+
+════════════════════════════════════════════════════════════════════════════════
+                       ARCHIVO 8: instrucciones.py
+════════════════════════════════════════════════════════════════════════════════
+
+"""
+Módulo de instrucciones del programa
+Contiene los textos de ayuda para cada operación
+"""
+
+class Instrucciones:
+    """Clase que contiene las instrucciones de uso del programa"""
+    
+    ESCALAR_MATRIZ = """
+╔════════════════════════════════════════════════════════════════╗
+║           INSTRUCCIONES: ESCALAR × MATRIZ                     ║
+╚════════════════════════════════════════════════════════════════╝
+
+¿QUÉ ES ESTA OPERACIÓN?
+Multiplica un número simple (escalar) por todos los elementos de una matriz.
+
+PASOS A SEGUIR:
+
+1.  SELECCIONAR DIMENSIONES DE LA MATRIZ
+   • Haz clic en el botón "SELECCIONAR DIMENSIONES"
+   • Elige el tamaño de tu matriz (filas × columnas)
+   • Ejemplos:
+     - 2×2 para una matriz pequeña
+     - 3×3 para una matriz mediana
+   • Se creará automáticamente una tabla para llenar
+
+2.  INGRESAR EL ESCALAR
+   • En el campo "ESCALAR:", escribe un número
+   • Puede ser entero o decimal:
+     ✓ Ejemplos correctos: 2, 3.5, -1, -2.7
+     ✗ Ejemplos incorrectos: .5, 1., -0.
+
+3.  LLENAR LA MATRIZ
+   • En la tabla de "MATRIZ", ingresa números en cada celda
+   • Presiona TAB para moverte entre celdas
+   • Todos los campos deben estar llenos
+   • Acepta números enteros y decimales
+
+4.  CALCULAR RESULTADO
+   • Haz clic en el botón "CALCULAR"
+   • El resultado aparecerá en la columna "RESULTADO"
+   • Verás cada elemento multiplicado por el escalar
+
+📝 EJEMPLO:
+   Escalar: 2
+   Matriz:  [1, 2]
+            [3, 4]
+   
+   Resultado: [2, 4]
+              [6, 8]
+
+"""
+
+    MATRIZ_MATRIZ = """
+╔════════════════════════════════════════════════════════════════╗
+║           INSTRUCCIONES: MATRIZ × MATRIZ                      ║
+╚════════════════════════════════════════════════════════════════╝
+
+¿QUÉ ES ESTA OPERACIÓN?
+Multiplica dos matrices entre sí siguiendo las reglas del álgebra linear.
+
+⚠️ REGLA IMPORTANTE:
+Las COLUMNAS de la Matriz 1 deben ser IGUALES a las FILAS de la Matriz 2.
+Ejemplo válido: Matriz 1 (2×3) × Matriz 2 (3×2) ✓
+Ejemplo inválido: Matriz 1 (2×3) × Matriz 2 (2×3) ✗
+
+PASOS A SEGUIR:
+
+1.  SELECCIONAR DIMENSIONES - MATRIZ 1
+   • Haz clic en "SELECCIONAR" de la MATRIZ 1
+   • Elige el tamaño (filas × columnas)
+   • Ejemplos: 2×2, 2×3, 3×2, etc.
+   • Se creará una tabla para llenar
+
+2.  LLENAR MATRIZ 1
+   • Ingresa números en todas las celdas
+   • Puedes usar enteros o decimales
+   • Ejemplo:
+     [1, 2]
+     [3, 4]
+
+3.  SELECCIONAR DIMENSIONES - MATRIZ 2
+   • Haz clic en "SELECCIONAR" de la MATRIZ 2
+   • Las FILAS deben coincidir con las COLUMNAS de Matriz 1
+   • Si Matriz 1 tiene 3 columnas, 
+     entonces Matriz 2 debe tener 3 filas
+   • Ejemplo si Matriz 1 es 2×3:
+     ✓ Matriz 2 puede ser 3×2, 3×3, 3×4, etc.
+     ✗ Matriz 2 NO puede ser 2×2, 4×2, etc.
+
+4.  LLENAR MATRIZ 2
+   • Completa todas las celdas igual que con Matriz 1
+   • Todos los valores deben estar presentes
+
+5.  CALCULAR RESULTADO
+   • Haz clic en "CALCULAR"
+   • El resultado aparecerá en "RESULTADO"
+   • La matriz resultante tendrá:
+     (Filas de Matriz 1) × (Columnas de Matriz 2)
+
+📝 EJEMPLO:
+   Matriz 1 (2×2):    Matriz 2 (2×2):      Resultado (2×2):
+   [1, 2]             [5, 6]               [19, 22]
+   [3, 4]             [7, 8]               [43, 50]
+
+"""
+
+    @staticmethod
+    def get_instrucciones_escalar_matriz():
+        """Retorna las instrucciones para Escalar × Matriz"""
+        return Instrucciones.ESCALAR_MATRIZ
+    
+    @staticmethod
+    def get_instrucciones_matriz_matriz():
+        """Retorna las instrucciones para Matriz × Matriz"""
+        return Instrucciones.MATRIZ_MATRIZ
+    
+    @staticmethod
+    def get_instrucciones_principal():
+        """Retorna las instrucciones de la pantalla principal"""
+        return """
+╔════════════════════════════════════════════════════════════════╗
+║      BIENVENIDO AL PROGRAMA DE ANÁLISIS NUMÉRICO              ║
+║             Operaciones con Matrices                          ║
+╚════════════════════════════════════════════════════════════════╝
+
+ESTE PROGRAMA PERMITE REALIZAR DOS OPERACIONES PRINCIPALES:
+
+1.  ESCALAR × MATRIZ
+   Multiplica un número único por todos los elementos de una matriz
+   Ideal para: Escalado, ajuste de magnitudes
+   
+2.  MATRIZ × MATRIZ
+   Multiplica dos matrices siguiendo reglas del álgebra linear
+   Ideal para: Transformaciones, sistemas de ecuaciones
+
+CÓMO USAR ESTE PROGRAMA:
+
+✓ Selecciona una operación haciendo clic en su botón
+✓ Sigue las instrucciones paso a paso
+✓ Los botones "?" en cada pantalla te ayudarán
+✓ El programa valida todos tus datos automáticamente
+
+¿NECESITAS AYUDA?
+
+En cada pantalla encontrarás:
+• Un botón "?" que explica esa operación
+• Botón "ATRÁS" para volver al menú principal
+• Botón "CALCULAR" para procesar tus datos
+
+¡Selecciona una operación para comenzar!
+"""
+
+
+════════════════════════════════════════════════════════════════════════════════
+FIN DEL DOCUMENTO
+════════════════════════════════════════════════════════════════════════════════
