@@ -1,0 +1,31 @@
+# Carpetas de compilación y caché
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+
+# Archivos de PyInstaller (excepto el .exe)
+*.spec
+*.toc
+*.zip
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos temporales
+*.tmp
+*.bak
+*.log
