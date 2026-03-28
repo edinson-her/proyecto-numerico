@@ -50,8 +50,10 @@ class SelectorDimensiones:
         
         def seleccionar(filas, cols):
             """Ejecuta el callback y cierra la ventana"""
-            callback(filas, cols)
-            ventana.destroy()
+            resultado = callback(filas, cols, ventana)
+            # Solo cierra si el callback retorna True o no retorna nada (None)
+            if resultado is not False:
+                ventana.destroy()
         
         # Botón 2×2
         btn_2x2 = ctk.CTkButton(

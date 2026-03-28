@@ -73,10 +73,20 @@ class UIMatrizMatriz(UIBase):
         
         matriz1_entries = []
         
-        def on_seleccionar_m1(filas, cols):
+        def on_seleccionar_m1(filas, cols, ventana_selector=None):
             dimension1_label.configure(text=f"DIMENSIÓN: {filas}×{cols}")
             nonlocal matriz1_entries
             matriz1_entries = self.crear_tabla_matriz(scrollable1, filas, cols)
+            
+            # Validar compatibilidad con Matriz 2 de una vez (si ya existe)
+            if matriz2_entries:
+                cols1 = cols
+                filas2 = len(matriz2_entries)
+                es_compatible, error = Validador.validar_dimensiones_compatibles(cols1, filas2)
+                if not es_compatible:
+                    messagebox.showerror("Dimensiones incompatibles", error, parent=ventana_selector)
+                    return False
+            return True
         
         btn_selector1 = ctk.CTkButton(
             config_m1,
@@ -136,10 +146,19 @@ class UIMatrizMatriz(UIBase):
         
         matriz2_entries = []
         
-        def on_seleccionar_m2(filas, cols):
+        def on_seleccionar_m2(filas, cols, ventana_selector=None):
             dimension2_label.configure(text=f"DIMENSIÓN: {filas}×{cols}")
             nonlocal matriz2_entries
             matriz2_entries = self.crear_tabla_matriz(scrollable2, filas, cols)
+            
+            # Validar compatibilidad con Matriz 1 de una vez
+            if matriz1_entries:
+                cols1 = len(matriz1_entries[0])
+                es_compatible, error = Validador.validar_dimensiones_compatibles(cols1, filas)
+                if not es_compatible:
+                    messagebox.showerror("Dimensiones incompatibles", error, parent=ventana_selector)
+                    return False
+            return True
         
         btn_selector2 = ctk.CTkButton(
             config_m2,
