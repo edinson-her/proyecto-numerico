@@ -3,7 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 build/
-dist/
+dist/*
+!dist/main.exe
 
 # Archivos de PyInstaller (excepto el .exe)
 *.spec
