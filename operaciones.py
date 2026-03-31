@@ -95,14 +95,14 @@ class OperacionesMatrices:
             matriz: array de numpy
             
         Returns:
-            String formateado
+            String formateado con 4 decimales máximo y coma como separador decimal
         """
         if len(matriz.shape) == 1:
             # Vector fila
-            return "[" + "  ".join(f"{x:.10g}" for x in matriz) + "]"
+            return "[" + "  ".join(f"{x:.4f}".replace(".", ",") for x in matriz) + "]"
         else:
             # Matriz 2D
             filas = []
             for fila in matriz:
-                filas.append("[" + "  ".join(f"{x:.10g}" for x in fila) + "]")
+                filas.append("[" + "  ".join(f"{x:.4f}".replace(".", ",") for x in fila) + "]")
             return "\n".join(filas)

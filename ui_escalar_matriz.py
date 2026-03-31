@@ -81,7 +81,7 @@ class UIEscalarMatriz(UIBase):
         matriz_entries = []
         
         # Función para manejar selección de dimensiones
-        def on_seleccionar_dimensiones(filas, cols):
+        def on_seleccionar_dimensiones(filas, cols, ventana_selector=None):
             filas_entry.delete(0, tk.END)
             filas_entry.insert(0, str(filas))
             cols_entry.delete(0, tk.END)
@@ -91,6 +91,7 @@ class UIEscalarMatriz(UIBase):
             # Crear tabla
             nonlocal matriz_entries
             matriz_entries = self.crear_tabla_matriz(scrollable_frame, filas, cols)
+            return True
         
         # Botón selector
         btn_selector = ctk.CTkButton(
@@ -221,7 +222,7 @@ class UIEscalarMatriz(UIBase):
                         
                         celda_label = ctk.CTkLabel(
                             celda_frame,
-                            text=f"{valor:.10g}",
+                            text=f"{valor:.4f}".replace(".", ","),
                             font=("Arial", 12),
                             text_color="black",
                             fg_color="white"
