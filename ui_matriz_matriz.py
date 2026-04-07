@@ -103,14 +103,23 @@ class UIMatrizMatriz(UIBase):
         
         btn_limpiar1 = ctk.CTkButton(
             config_m1,
-            text="LIMPIAR MATRIZ",
+            text="LIMPIAR TABLA",
             command=lambda: self.limpiar_matriz_entries(matriz1_entries),
+            font=("Arial", 10),
+            width=140
+        )
+        btn_limpiar1.pack(side="left", padx=5)
+        
+        btn_eliminar1 = ctk.CTkButton(
+            config_m1,
+            text="ELIMINAR TABLA",
+            command=lambda: (scrollable1.destroy(), matriz1_entries.clear() if True else None, dimension1_label.configure(text="DIMENSIÓN: (sin seleccionar)")),
             font=("Arial", 10),
             width=140,
             fg_color=("#E74C3C", "#C0392B"),
             hover_color=("#C0392B", "#A93226")
         )
-        btn_limpiar1.pack(side="left", padx=5)
+        btn_eliminar1.pack(side="left", padx=5)
         
         # Tabla 1
         tabla1_frame = ctk.CTkFrame(frame_m1)
@@ -175,14 +184,23 @@ class UIMatrizMatriz(UIBase):
         
         btn_limpiar2 = ctk.CTkButton(
             config_m2,
-            text="LIMPIAR MATRIZ",
+            text="LIMPIAR TABLA",
             command=lambda: self.limpiar_matriz_entries(matriz2_entries),
+            font=("Arial", 10),
+            width=140
+        )
+        btn_limpiar2.pack(side="left", padx=5)
+        
+        btn_eliminar2 = ctk.CTkButton(
+            config_m2,
+            text="ELIMINAR TABLA",
+            command=lambda: (scrollable2.destroy(), matriz2_entries.clear() if True else None, dimension2_label.configure(text="DIMENSIÓN: (sin seleccionar)")),
             font=("Arial", 10),
             width=140,
             fg_color=("#E74C3C", "#C0392B"),
             hover_color=("#C0392B", "#A93226")
         )
-        btn_limpiar2.pack(side="left", padx=5)
+        btn_eliminar2.pack(side="left", padx=5)
         
         # Tabla 2
         tabla2_frame = ctk.CTkFrame(frame_m2)

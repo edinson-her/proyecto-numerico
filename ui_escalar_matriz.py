@@ -107,21 +107,43 @@ class UIEscalarMatriz(UIBase):
         )
         btn_selector.pack(side="left", padx=10)
         
-        # Botón vaciar
+        # Botón vaciar/limpiar
         def vaciar_tabla():
             if not matriz_entries:
                 messagebox.showwarning("Advertencia", "No hay tabla creada aún")
                 return
             self.limpiar_matriz_entries(matriz_entries)
         
-        btn_vaciar = ctk.CTkButton(
+        btn_limpiar = ctk.CTkButton(
             config_frame,
-            text="VACIAR TABLA",
+            text="LIMPIAR TABLA",
             command=vaciar_tabla,
             font=("Arial", 10),
             width=120
         )
-        btn_vaciar.pack(side="left", padx=5)
+        btn_limpiar.pack(side="left", padx=5)
+        
+        # Botón eliminar tabla
+        def eliminar_tabla():
+            if not matriz_entries:
+                messagebox.showwarning("Advertencia", "No hay tabla creada aún")
+                return
+            # Limpiar el scrollable frame para eliminar la tabla
+            for widget in scrollable_frame.winfo_children():
+                widget.destroy()
+            matriz_entries.clear()
+            dimension_label.configure(text="MATRIZ: (sin seleccionar)")
+        
+        btn_eliminar = ctk.CTkButton(
+            config_frame,
+            text="ELIMINAR TABLA",
+            command=eliminar_tabla,
+            font=("Arial", 10),
+            width=120,
+            fg_color=("#E74C3C", "#C0392B"),
+            hover_color=("#C0392B", "#A93226")
+        )
+        btn_eliminar.pack(side="left", padx=5)
         
         # Frame principal para tabla y resultado lado a lado
         tabla_frame = ctk.CTkFrame(main_frame)

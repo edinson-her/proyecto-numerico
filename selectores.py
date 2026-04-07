@@ -128,3 +128,61 @@ class SelectorDimensiones:
                 font=("Arial", 10)
             )
             btn.grid(row=fila, column=col, padx=3, pady=3)
+        
+        # Separador
+        separador = ctk.CTkFrame(ventana, height=2, fg_color="gray")
+        separador.pack(fill="x", padx=20, pady=10)
+        
+        # Etiqueta personalizado
+        personalizado_label = ctk.CTkLabel(
+            ventana,
+            text="DIMENSIONES PERSONALIZADAS:",
+            font=("Arial", 12, "bold"),
+            text_color="blue"
+        )
+        personalizado_label.pack(pady=5)
+        
+        # Frame para entrada personalizada
+        custom_frame = ctk.CTkFrame(ventana)
+        custom_frame.pack(fill="x", padx=20, pady=10)
+        
+        # Etiqueta y entrada filas
+        ctk.CTkLabel(custom_frame, text="Filas:", font=("Arial", 10)).pack(side="left", padx=5)
+        filas_custom_entry = ctk.CTkEntry(custom_frame, width=60, font=("Arial", 10))
+        filas_custom_entry.pack(side="left", padx=5)
+        
+        # Etiqueta y entrada columnas
+        ctk.CTkLabel(custom_frame, text="Columnas:", font=("Arial", 10)).pack(side="left", padx=5)
+        cols_custom_entry = ctk.CTkEntry(custom_frame, width=60, font=("Arial", 10))
+        cols_custom_entry.pack(side="left", padx=5)
+        
+        # Botón crear tabla personalizada
+        def crear_personalizado():
+            try:
+                filas = int(filas_custom_entry.get())
+                cols = int(cols_custom_entry.get())
+                
+                # Validar que sean números positivos
+                if filas <= 0 or cols <= 0:
+                    raise ValueError("Las dimensiones deben ser mayores a 0")
+                
+                # Validar que no sean demasiado grandes
+                if filas > 12 or cols > 12:
+                    raise ValueError("Las dimensiones no pueden ser mayores a 12")
+                
+                seleccionar(filas, cols)
+            except ValueError as e:
+                from tkinter import messagebox
+                messagebox.showerror("Error", f"Entrada inválida:\n{str(e)}", parent=ventana)
+                filas_custom_entry.focus()
+        
+        btn_custom = ctk.CTkButton(
+            custom_frame,
+            text="CREAR TABLA",
+            command=crear_personalizado,
+            width=120,
+            height=35,
+            font=("Arial", 10, "bold"),
+            fg_color="blue"
+        )
+        btn_custom.pack(side="left", padx=10)

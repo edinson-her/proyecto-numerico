@@ -17,7 +17,7 @@ class AplicacionMatrices(UIBase):
         
         self.root.title("Análisis Numérico - Operaciones con Matrices")
         self.root.geometry("900x600")
-        self.root.resizable(False, False)
+        self.root.resizable(True, True)
         
         # Instancias de interfaces
         self.ui_escalar = UIEscalarMatriz(self.root, self.operaciones)
