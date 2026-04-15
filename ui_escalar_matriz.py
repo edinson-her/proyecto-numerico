@@ -60,6 +60,9 @@ class UIEscalarMatriz(UIBase):
         escalar_entry = ctk.CTkEntry(config_frame, width=100, font=("Arial", 11))
         escalar_entry.pack(side="left", padx=5)
         
+        # Agregar binding para detectar cuando el escalar_entry tiene focus
+        escalar_entry.bind("<FocusIn>", lambda e: setattr(self, 'widget_enfocado', escalar_entry))
+        
         # Etiqueta de dimensión
         dimension_label = ctk.CTkLabel(
             config_frame,
@@ -144,6 +147,18 @@ class UIEscalarMatriz(UIBase):
             hover_color=("#C0392B", "#A93226")
         )
         btn_eliminar.pack(side="left", padx=5)
+        
+        # Botón teclado numérico
+        btn_teclado = ctk.CTkButton(
+            config_frame,
+            text="⌨️ TECLADO",
+            command=lambda: self.mostrar_teclado_numerico(entry_widget=escalar_entry),
+            font=("Arial", 10),
+            width=120,
+            fg_color=("#3498DB", "#2980B9"),
+            hover_color=("#2980B9", "#1F618D")
+        )
+        btn_teclado.pack(side="left", padx=5)
         
         # Frame principal para tabla y resultado lado a lado
         tabla_frame = ctk.CTkFrame(main_frame)

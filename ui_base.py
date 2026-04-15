@@ -5,6 +5,7 @@ Contiene la clase base con métodos comunes para todas las interfaces
 
 import customtkinter as ctk
 from instrucciones import Instrucciones
+from teclado_numerico import TecladoNumerico
 
 
 class UIBase:
@@ -20,6 +21,7 @@ class UIBase:
         """
         self.root = root
         self.operaciones = operaciones
+        self.widget_enfocado = None  # Almacenar el widget con focus
     
     def mostrar_instrucciones(self, titulo, contenido):
         """
@@ -128,6 +130,13 @@ class UIBase:
             for j in range(cols):
                 entry = ctk.CTkEntry(matriz_frame, width=50, font=("Arial", 9))
                 entry.grid(row=i, column=j, padx=3, pady=3)
+                
+                # Agregar binding para detectar focus en esta celda
+                def on_focus_in(event, entry_ref=entry):
+                    self.widget_enfocado = entry_ref
+                
+                entry.bind("<FocusIn>", on_focus_in)
+                
                 fila_entries.append(entry)
             matriz_entries.append(fila_entries)
         
@@ -142,3 +151,15 @@ class UIBase:
         for fila_entries in matriz_entries:
             for entry in fila_entries:
                 self.vaciar_entrada(entry)
+    
+    def mostrar_teclado_numerico(self, entry_widget=None, callback=None):
+        """
+        Muestra el teclado numérico
+        
+        Args:
+            entry_widget: widget Entry donde insertar valores (opcional)
+            callback: función callback cuando se completa la entrada (opcional)
+        """
+        # Si no se proporciona explícitamente, usar el widget enfocado guardado
+        widget_a_usar = entry_widget or self.widget_enfocado
+        TecladoNumerico.mostrar_teclado(self.root, widget_a_usar, callback)

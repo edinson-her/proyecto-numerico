@@ -26,15 +26,29 @@ PASOS A SEGUIR:
 
 2.  INGRESAR EL ESCALAR
    • En el campo "ESCALAR:", escribe un número
-   • Puede ser entero o decimal:
-     ✓ Ejemplos correctos: 2, 3.5, -1, -2.7
-     ✗ Ejemplos incorrectos: .5, 1., -0.
+   • Puede ser:
+     ✓ Número: 2, 3.5, -1, -2.7
+     ✓ Expresiones matemáticas: sqrt(4), log(100), sin(0), cos(0), tan(0)
+   • Funciones disponibles:
+     - sqrt(x): Raíz cuadrada de x
+     - log(x): Logaritmo base 10
+     - ln(x): Logaritmo natural
+     - sin(x), cos(x), tan(x): Trigonometría
+     - pi: Constante pi (3.14159...)
+     - e: Número de Euler (2.71828...)
 
 3.  LLENAR LA MATRIZ
    • En la tabla de "MATRIZ", ingresa números en cada celda
    • Presiona TAB para moverte entre celdas
    • Todos los campos deben estar llenos
-   • Acepta números enteros y decimales
+   • Puedes usar: números, funciones matemáticas u operaciones
+   • Ejemplos válidos en cada celda:
+     ✓ Números: 5, 3.14, -2, 0.5
+     ✓ Raíces: sqrt(2), sqrt(9), sqrt(16)
+     ✓ Logaritmos: log(100), ln(2.718)
+     ✓ Trigonometría: sin(0), cos(0), tan(45)
+     ✓ Operaciones: 2+3, 5*2, 10/2, 2^3
+     ✓ Combinaciones: sqrt(2)+3, log(100)/2, 2*pi
 
 4.  CALCULAR RESULTADO
    • Haz clic en el botón "CALCULAR"
@@ -74,8 +88,14 @@ PASOS A SEGUIR:
 
 2.  LLENAR MATRIZ 1
    • Ingresa números en todas las celdas
-   • Puedes usar enteros o decimales
-   • Ejemplo:
+   • Puedes usar: números simples, funciones matemáticas u operaciones
+   • Ejemplos válidos en cada celda:
+     ✓ Números: 1, 2, 3.5, -2
+     ✓ Raíces: sqrt(4), sqrt(2)
+     ✓ Logaritmos: log(100), ln(2.718)
+     ✓ Trigonometría: sin(0), cos(0)
+     ✓ Operaciones: 2+3, 5*2, 2^3
+   • Matriz ejemplo:
      [1, 2]
      [3, 4]
 
@@ -90,6 +110,8 @@ PASOS A SEGUIR:
 
 4.  LLENAR MATRIZ 2
    • Completa todas las celdas igual que con Matriz 1
+   • Puedes usar números, funciones matemáticas u operaciones
+   • Ejemplos válidos: sqrt(9), log(10), sin(0), 5+2, pi/2, etc.
    • Todos los valores deben estar presentes
 
 5.  CALCULAR RESULTADO

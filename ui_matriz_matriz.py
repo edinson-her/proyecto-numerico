@@ -121,6 +121,18 @@ class UIMatrizMatriz(UIBase):
         )
         btn_eliminar1.pack(side="left", padx=5)
         
+        # Botón teclado numérico para Matriz 1
+        btn_teclado1 = ctk.CTkButton(
+            config_m1,
+            text="⌨️ TECLADO",
+            command=lambda: self.mostrar_teclado_numerico(),
+            font=("Arial", 10),
+            width=120,
+            fg_color=("#3498DB", "#2980B9"),
+            hover_color=("#2980B9", "#1F618D")
+        )
+        btn_teclado1.pack(side="left", padx=5)
+        
         # Tabla 1
         tabla1_frame = ctk.CTkFrame(frame_m1)
         tabla1_frame.pack(fill="both", expand=True, pady=5, padx=5)
@@ -201,6 +213,18 @@ class UIMatrizMatriz(UIBase):
             hover_color=("#C0392B", "#A93226")
         )
         btn_eliminar2.pack(side="left", padx=5)
+        
+        # Botón teclado numérico para Matriz 2
+        btn_teclado2 = ctk.CTkButton(
+            config_m2,
+            text="⌨️ TECLADO",
+            command=lambda: self.mostrar_teclado_numerico(),
+            font=("Arial", 10),
+            width=120,
+            fg_color=("#3498DB", "#2980B9"),
+            hover_color=("#2980B9", "#1F618D")
+        )
+        btn_teclado2.pack(side="left", padx=5)
         
         # Tabla 2
         tabla2_frame = ctk.CTkFrame(frame_m2)
